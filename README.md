@@ -1,13 +1,16 @@
 # TIC TAC TOE
 
 
+
+
+
 **TODOS:**
 
 - Start page of Game
 
 - Make Web app (flask)
 
-- Computer vs Human
+- Computer vs Human -> Minimax
 
 - Sound effects
 
