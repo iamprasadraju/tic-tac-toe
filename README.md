@@ -1,6 +1,6 @@
 # TIC TAC TOE
 
-
+![screensshot](http://raw.githubusercontent.com/iamprasadraju/tic-tac-toe/refs/heads/main/screenshot.png)
 
 
 
