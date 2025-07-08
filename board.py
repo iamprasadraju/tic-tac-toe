@@ -23,6 +23,23 @@ class Board():
         self.playerA_moves = [] # X moves
         self.playerB_moves = [] # O moves
 
+        board_positions = [[(i, j) for j in range(1, 4)] for i in range(1, 4)]
+        horizontal_positions = board_positions.copy()
+        vertical_positions = []
+        # vertical_positions  = [[board_positions[row][col] for row in range(3)] for col in range(3)]
+
+        for col in range(3):
+            vertical = []
+            for row in range(3):
+                vertical.append(board_positions[row][col])
+            vertical_positions.append(vertical)
+        diagonal_positions = [
+            [board_positions[i][i] for i in range(3)],
+            [board_positions[i][2 - i] for i in range(3)]
+        ]
+
+        self.win_moves = vertical_positions + horizontal_positions + diagonal_positions
+
     def draw_board(self):
         screen.fill((0, 0, 0)) # Black
         
@@ -56,11 +73,25 @@ class Board():
         pygame.draw.line(screen, self.LINE_COLOR, (end_x, start_y), (start_x, end_y), self.LINE_WIDTH)
 
 
-    def play(self, win_moves):
+    def check_win(self):
+        # Check for win after this move
+                A = set(self.playerA_moves)
+                B = set(self.playerB_moves)
+
+                for line in self.win_moves:
+                    if set(line).issubset(A):
+                        print("Player A wins! - X")
+                        pygame.display.set_caption("Player A wins! - X")
+                        # if a player wins sys.exit
+                        sys.exit()
+                    elif set(line).issubset(B):
+                        print("Player B wins! - O")
+                        pygame.display.set_caption("Player B wins! - O")
+                        sys.exit()
+
+    def play(self):
         self.draw_board()
         pygame.display.flip()
-        
-
         running = True
         while running:
             for event in pygame.event.get():
@@ -78,33 +109,23 @@ class Board():
                         if self.move_count % 2 == 0:
                             self.draw_cross(clicked_row, clicked_col)
                             self.playerA_moves.append(move)
+                            pygame.display.set_caption("O Turn !")
                         else:
                             self.draw_circle(clicked_row, clicked_col)
                             self.playerB_moves.append(move)
+                            pygame.display.set_caption("X Turn !")
                             
                         self.visited_cells.append(move)
                         self.move_count += 1
                         pygame.display.flip()
 
-                        # Check for win after this move
-                        A = set(self.playerA_moves)
-                        B = set(self.playerB_moves)
-
-                        for line in win_moves:
-                            if set(line).issubset(A):
-                                print("Player A wins! - X")
-                                pygame.display.set_caption("Player A wins! - X")
-                                return self.playerA_moves, self.playerB_moves
-                            elif set(line).issubset(B):
-                                print("Player B wins! - O")
-                                pygame.display.set_caption("Player B wins! - O")
-                                return self.playerA_moves, self.playerB_moves
-
                     else:
                         print("Try Again !")
 
-            if self.move_count >= 9:
-                running = False
+                self.check_win()
 
-        return self.playerA_moves, self.playerB_moves
-        
+        if self.move_count >= 9:
+                    running = False
+
+board = Board()
+board.play()
