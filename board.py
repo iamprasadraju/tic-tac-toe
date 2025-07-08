@@ -40,7 +40,7 @@ class Board():
 
         self.win_moves = vertical_positions + horizontal_positions + diagonal_positions
 
-    def draw_board(self):
+    def board_ui(self):
         screen.fill((0, 0, 0)) # Black
         
         # Draw 2 horizontal lines 
@@ -75,22 +75,46 @@ class Board():
 
     def check_win(self):
         # Check for win after this move
-                A = set(self.playerA_moves)
-                B = set(self.playerB_moves)
+        A = set(self.playerA_moves)
+        B = set(self.playerB_moves)
 
-                for line in self.win_moves:
-                    if set(line).issubset(A):
-                        print("Player A wins! - X")
-                        pygame.display.set_caption("Player A wins! - X")
-                        # if a player wins sys.exit
-                        sys.exit()
-                    elif set(line).issubset(B):
-                        print("Player B wins! - O")
-                        pygame.display.set_caption("Player B wins! - O")
-                        sys.exit()
+        for line in self.win_moves:
+            if set(line).issubset(A):
+                pygame.display.set_caption("Player A wins! - X")
+                # if a player wins sys.exit
+                return "X"
+            elif set(line).issubset(B):
+                pygame.display.set_caption("Player B wins! - O")
+                return "O"
 
+    def move(self):
+        # Get Mouse click Co-ordinate  
+        mouseX, mouseY = pygame.mouse.get_pos()
+        clicked_row = mouseY // self.CELL_SIZE
+        clicked_col = mouseX // self.CELL_SIZE
+        move  = (clicked_row + 1, clicked_col + 1)
+
+        if move not in self.visited_cells:
+            if self.move_count % 2 == 0:
+                self.draw_cross(clicked_row, clicked_col)
+                self.playerA_moves.append(move)
+                pygame.display.set_caption("O Turn !")
+            else:
+                self.draw_circle(clicked_row, clicked_col)
+                self.playerB_moves.append(move)
+                pygame.display.set_caption("X Turn !")
+                
+            self.visited_cells.append(move)
+            self.move_count += 1
+            # Update the Screen
+            pygame.display.flip()
+
+        else:
+            print("Try Again !")
+
+    
     def play(self):
-        self.draw_board()
+        self.board_ui()
         pygame.display.flip()
         running = True
         while running:
@@ -99,33 +123,13 @@ class Board():
                     pygame.quit()
                     sys.exit()
         
-                elif event.type == pygame.MOUSEBUTTONDOWN and self.move_count < 9:  
-                    mouseX, mouseY = pygame.mouse.get_pos()
-                    clicked_row = mouseY // self.CELL_SIZE
-                    clicked_col = mouseX // self.CELL_SIZE
-                    move  = (clicked_row + 1, clicked_col + 1)
+                elif event.type == pygame.MOUSEBUTTONDOWN and self.move_count < 9:
+                    self.move()
 
-                    if move not in self.visited_cells:
-                        if self.move_count % 2 == 0:
-                            self.draw_cross(clicked_row, clicked_col)
-                            self.playerA_moves.append(move)
-                            pygame.display.set_caption("O Turn !")
-                        else:
-                            self.draw_circle(clicked_row, clicked_col)
-                            self.playerB_moves.append(move)
-                            pygame.display.set_caption("X Turn !")
-                            
-                        self.visited_cells.append(move)
-                        self.move_count += 1
-                        pygame.display.flip()
-
-                    else:
-                        print("Try Again !")
-
-                self.check_win()
+            self.check_win()
 
         if self.move_count >= 9:
                     running = False
 
-board = Board()
-board.play()
+"""board = Board()
+board.play()"""
