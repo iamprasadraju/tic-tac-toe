@@ -5,22 +5,8 @@ import sys
 
 board = Board()
 
-def check_win():
-    A = set(board.playerA_moves)
-    B = set(board.playerB_moves)
 
-    for line in board.win_moves:
-        if set(line).issubset(A):
-            return 1 # player A wins
-        elif set(line).issubset(B):
-            return -1 # Player B wins
-    if board.move_count >= 9:
-        return 0 # Draw 
-    return None
-
-
-
-def compter_vs_human():
+def CvsH():
     seq = ["X", "O"]
     human_sym = random.choice(seq)
     computer_sym = "O" if human_sym == "X" else "X"
@@ -31,31 +17,21 @@ def compter_vs_human():
 
     while running:
         # Human move
-
-        is_huamn_turn = (board.move_count % 2 == 0 and human_sym == "X") or (board.move_count % 2 == 1 and human_sym == "O")
-        if is_huamn_turn:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-                elif event.type == pygame.MOUSEBUTTONDOWN and board.move_count < 9:
-                    mouseX, mouseY = pygame.mouse.get_pos()
-                    row = mouseY // board.CELL_SIZE
-                    col = mouseX // board.CELL_SIZE
-                    move = (row + 1, col + 1)
-                    if board.apply_move(move, human_sym):
-                        result = check_win()
-                        if result is not None:
-                            if result == 0:
-                                print("Draw !")
-                            elif (result == 1 and human_sym == "X") or (result == -1 and human_sym == "O"):
-                                print("Human Wins !")
-                            else:
-                                print("Computer Wins !")
-                            pygame.time.wait(500)
-                            pygame.quit()
-                            sys.exit()
-             
+        is_human_turn = (board.move_count % 2 == 0 and human_sym == "X") or (board.move_count % 2 == 1 and human_sym == "O")
+        if is_human_turn:
+                move = board.mouse_click()
+                if board.apply_move(move, human_sym):
+                    result = board.check_win()
+                    if result is not None:
+                        if result == 0:
+                            print("Draw !")
+                        elif (result == 1 and human_sym == "X") or (result == -1 and human_sym == "O"):
+                            print("Human Wins !")
+                        else:
+                            print("Computer Wins !")
+                        pygame.time.wait(500)
+                        pygame.quit()
+                        sys.exit()
         else:
             # Computer Move -> random Move without Intelligence
             pygame.time.wait(500)
@@ -64,7 +40,7 @@ def compter_vs_human():
             if unvisited:
                 move = random.choice(unvisited)
                 if board.apply_move(move, computer_sym):
-                    result = check_win()
+                    result = board.check_win()
                     if result is not None:
                         if result == 0:
                             print("Draw !")
@@ -76,8 +52,25 @@ def compter_vs_human():
                         pygame.quit()
                         sys.exit()
 
-compter_vs_human()
-    
+def HvsH():
+    board.board_ui()
+    pygame.display.flip()
+    while True:
+        move = board.mouse_click()
+        current_player = "X" if board.move_count % 2 == 0 else "O"
+        if board.apply_move(move, current_player):
+            result = board.check_win()
+            if result is not None:
+                if result == 0:
+                    print("Draw !")
+                elif result == 1:
+                    print("X wins !!")
+                else:
+                    print("O wins !!")
+                pygame.time.wait(500)
+                pygame.quit()
+                sys.exit()
+        else:
+            print("Invalid Move, Try again !")
 
-
-
+CvsH()
