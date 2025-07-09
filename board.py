@@ -76,3 +76,30 @@ class Board():
         self.move_count += 1
         pygame.display.flip()
         return True
+    
+    def mouse_click(self):
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                elif event.type == pygame.MOUSEBUTTONDOWN and self.move_count < 9:
+                    mouseX, mouseY = pygame.mouse.get_pos()
+                    row = mouseY // self.CELL_SIZE
+                    col = mouseX // self.CELL_SIZE
+                    move = (row + 1, col + 1)
+                    return move
+            
+    def check_win(self):
+        A = set(self.playerA_moves)
+        B = set(self.playerB_moves)
+
+        for line in self.win_moves:
+            if set(line).issubset(A):
+                return 1 # player A wins
+            elif set(line).issubset(B):
+                return -1 # Player B wins
+        if self.move_count == 9:
+            return 0 # Draw 
+        return None
