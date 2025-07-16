@@ -5,22 +5,22 @@ import random
 from board import Board
 
 
-
 def copy_board(original):
-    new_board = Board(draw_enabled = False)
+    new_board = Board(draw_enabled=False)
     new_board.visited_cells = original.visited_cells.copy()
     new_board.playerA_moves = original.playerA_moves.copy()
     new_board.playerB_moves = original.playerB_moves.copy()
     new_board.move_count = original.move_count
     return new_board
 
-def MiniMax(game_state, is_maximizing, computer_sym): # without Depth Because it's a small gaame
-    result = game_state.check_win()
 
-    if result is not None:
-        if result == 1:  # X wins
+def MiniMax(game_state, is_maximizing, computer_sym):
+    winner, _ = game_state.check_win()
+
+    if winner is not None:
+        if winner == 1:  # X wins
             return 1 if computer_sym == 'X' else -1
-        elif result == -1:  # O wins
+        elif winner == -1:  # O wins
             return 1 if computer_sym == 'O' else -1
         else:  # Draw
             return 0
@@ -42,6 +42,7 @@ def MiniMax(game_state, is_maximizing, computer_sym): # without Depth Because it
             value = MiniMax(new_board, True, computer_sym)
             best_value = min(best_value, value)
         return best_value
+
 
 def find_best_move(board, computer_sym):
     best_move = None
@@ -85,17 +86,20 @@ def CvsH():
                 pygame.quit()
                 sys.exit()
 
-            elif not game_over and event.type == pygame.MOUSEBUTTONDOWN and board.move_count < 9:
+            if not game_over and event.type == pygame.MOUSEBUTTONDOWN and board.move_count < 9:
                 mouseX, mouseY = pygame.mouse.get_pos()
                 row = mouseY // board.CELL_SIZE
                 col = mouseX // board.CELL_SIZE
                 move = (row + 1, col + 1)
 
                 if board.apply_move(move, human_sym):
-                    result = board.check_win()
-                    if result is not None:
+                    winner, win_line = board.check_win()
+                    if winner is not None:
+                        if winner != 0:
+                            board.draw_winning_line(win_line)
+                            pygame.display.flip()
                         game_over = True
-                        board.gameOver_ui(result, human_sym)
+                        board.gameOver_ui(winner, human_sym)
                         break
 
                     pygame.display.set_caption("Computer's Turn")
@@ -106,10 +110,13 @@ def CvsH():
                         move = find_best_move(board, computer_sym)
                         if move:
                             board.apply_move(move, computer_sym)
-                            result = board.check_win()
-                            if result is not None:
+                            winner, win_line = board.check_win()
+                            if winner is not None:
+                                if winner != 0:
+                                    board.draw_winning_line(win_line)
+                                    pygame.display.flip()
                                 game_over = True
-                                board.gameOver_ui(result, human_sym)
+                                board.gameOver_ui(winner, human_sym)
                                 break
                             pygame.display.set_caption("Your Turn")
                             pygame.display.flip()
@@ -120,10 +127,13 @@ def CvsH():
                 if board.restart_button and board.restart_button.collidepoint(event.pos):
                     board.reset()
                     game_over = False
+                    # If computer is X, let it move first again
                     if computer_sym == "X":
                         first_move = random.choice(board.get_available_moves())
                         board.apply_move(first_move, computer_sym)
-                    pygame.display.set_caption("Your Turn" if human_sym == "X" else "Computer's Turn")
+                        pygame.display.set_caption("Your Turn")
+                    else:
+                        pygame.display.set_caption("Your Turn" if human_sym == "X" else "Computer's Turn")
                     pygame.display.flip()
 
 
@@ -150,10 +160,13 @@ def HvsH():
 
                 current_player = "X" if board.move_count % 2 == 0 else "O"
                 if board.apply_move(move, current_player):
-                    result = board.check_win()
-                    if result is not None:
+                    winner, win_line = board.check_win()
+                    if winner is not None:
+                        if winner != 0:
+                            board.draw_winning_line(win_line)
+                            pygame.display.flip()
+                        board.gameOver_ui(winner)
                         game_over = True
-                        board.gameOver_ui(result)
                 else:
                     print("Invalid move. Try again!")
 
@@ -162,8 +175,6 @@ def HvsH():
                     board.reset()
                     game_over = False
 
-
-            
 
 if __name__ == "__main__":
     board = Board()
