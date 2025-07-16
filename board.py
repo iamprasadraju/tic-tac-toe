@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import pygame
 import sys
 
@@ -9,7 +8,9 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Tic Tac Toe")
 
 class Board():
-    def __init__(self):
+    def __init__(self, draw_enabled = True):
+        self.draw_enabled = draw_enabled
+        
         self.LINE_COLOR = (255, 255, 255)
         self.LINE_WIDTH = 2
         self.CELL_SIZE = WIDTH // 3
@@ -58,25 +59,30 @@ class Board():
 
 
     def apply_move(self, move, player_symbol):
-        row, col = move[0] - 1, move[1] - 1
         if move in self.visited_cells:
             return False
 
+        row, col = move[0] - 1, move[1] - 1
         self.visited_cells.append(move)
 
+        if self.draw_enabled:
+            if player_symbol == "X":
+                self.draw_cross(row, col)
+                pygame.display.set_caption("O Turn!")
+            else:
+                self.draw_circle(row, col)
+                pygame.display.set_caption("X Turn!")
+            pygame.display.flip()
+
         if player_symbol == "X":
-            self.draw_cross(row, col)
             self.playerA_moves.append(move)
-            pygame.display.set_caption("O Turn !")
         else:
-            self.draw_circle(row, col)
             self.playerB_moves.append(move)
-            pygame.display.set_caption("X Turn !")
 
         self.move_count += 1
-        pygame.display.flip()
         return True
-    
+
+
     def mouse_click(self):
         running = True
         while running:
@@ -90,7 +96,11 @@ class Board():
                     col = mouseX // self.CELL_SIZE
                     move = (row + 1, col + 1)
                     return move
-            
+                    
+    def get_available_moves(self):
+        all_moves = [(i, j) for i in range(1, 4) for j in range(1, 4)]
+        return [move for move in all_moves if move not in self.visited_cells]
+    
     def check_win(self):
         A = set(self.playerA_moves)
         B = set(self.playerB_moves)
@@ -103,3 +113,11 @@ class Board():
         if self.move_count == 9:
             return 0 # Draw 
         return None
+    
+    def reset(self):
+        self.visited_cells = []
+        self.playerA_moves = []
+        self.playerB_moves = []
+        self.move_count = 0
+        self.board_ui()
+        pygame.display.flip()
