@@ -9,8 +9,15 @@ pygame.display.set_caption("Tic Tac Toe")
 
 class Board():
     def __init__(self, draw_enabled = True):
+        self.font = pygame.font.SysFont('Corbel', 35)
+        self.button_font = pygame.font.SysFont('Corbel', 25)
+
+        self.button_cvsh = pygame.Rect(WIDTH//2 - 150, HEIGHT//2, 300, 50)
+        self.button_hvsh = pygame.Rect(WIDTH//2 - 150, HEIGHT//2 + 70, 300, 50)
+
+
         self.draw_enabled = draw_enabled
-        
+
         self.LINE_COLOR = (255, 255, 255)
         self.LINE_WIDTH = 2
         self.CELL_SIZE = WIDTH // 3
@@ -81,6 +88,50 @@ class Board():
 
         self.move_count += 1
         return True
+    
+    def Home_ui(self):
+        screen.fill("purple") # Black
+
+        title_surface = self.font.render("Tic Tac Toe", True, (255, 255, 255))
+        title_rect = title_surface.get_rect()
+
+        title_rect.center = (WIDTH // 2, HEIGHT // 6)
+        screen.blit(title_surface, title_rect)
+
+
+        # Draw buttons
+        pygame.draw.rect(screen, (0, 128, 255), self.button_cvsh)  # Blue button
+        pygame.draw.rect(screen, (0, 128, 255), self.button_hvsh)
+
+        # Button text
+        cvsh_text = self.button_font.render("Play Computer vs Human", True, (255, 255, 255))
+        hvsh_text = self.button_font.render("Play Human vs Human", True, (255, 255, 255))
+
+        cvsh_rect = cvsh_text.get_rect(center = self.button_cvsh.center)
+        hvsh_rect = hvsh_text.get_rect(center = self.button_hvsh.center)
+
+        screen.blit(cvsh_text, cvsh_rect)
+        screen.blit(hvsh_text, hvsh_rect)
+
+
+        pygame.display.flip()
+
+
+
+    def handle_home_events(self):
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if self.button_cvsh.collidepoint(event.pos):
+                        return "CvsH"  # Computer vs Human selected
+                    elif self.button_hvsh.collidepoint(event.pos):
+                        return "HvsH"  # Human vs Human selected
+
+            self.Home_ui()
 
 
     def mouse_click(self):
