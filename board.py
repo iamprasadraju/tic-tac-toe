@@ -65,6 +65,24 @@ class Board():
         pygame.draw.line(screen, self.LINE_COLOR, (end_x, start_y), (start_x, end_y), self.LINE_WIDTH)
 
 
+    def draw_winning_line(self, line):
+        # line is a list of 3 moves, e.g. [(1,1), (1,2), (1,3)]
+        start_cell = line[0]
+        end_cell = line[2]
+
+        # Convert board positions (1-based) to pixel center positions
+        start_x = (start_cell[1] - 1) * self.CELL_SIZE + self.CELL_SIZE // 2
+        start_y = (start_cell[0] - 1) * self.CELL_SIZE + self.CELL_SIZE // 2
+
+        end_x = (end_cell[1] - 1) * self.CELL_SIZE + self.CELL_SIZE // 2
+        end_y = (end_cell[0] - 1) * self.CELL_SIZE + self.CELL_SIZE // 2
+
+        # Draw a thick red line across the winning cells
+        pygame.draw.line(screen, (255, 0, 0), (start_x, start_y), (end_x, end_y), 8)
+        pygame.display.flip()
+        pygame.time.wait(1000)
+
+
     def apply_move(self, move, player_symbol):
         if move in self.visited_cells:
             return False
@@ -153,6 +171,8 @@ class Board():
 
         pygame.display.flip()
 
+        pygame.time.wait(500)
+
 
 
     def handle_home_events(self):
@@ -195,12 +215,12 @@ class Board():
 
         for line in self.win_moves:
             if set(line).issubset(A):
-                return 1 # player A wins
+                return 1, line  # player A wins + winning line
             elif set(line).issubset(B):
-                return -1 # Player B wins
+                return -1, line  # player B wins + winning line
         if self.move_count == 9:
-            return 0 # Draw 
-        return None
+            return 0, None
+        return None, None
     
     def reset(self):
         self.visited_cells = []
