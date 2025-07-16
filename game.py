@@ -5,6 +5,7 @@ import random
 from board import Board
 
 
+
 def copy_board(original):
     new_board = Board(draw_enabled = False)
     new_board.visited_cells = original.visited_cells.copy()
@@ -76,22 +77,23 @@ def CvsH():
     board.board_ui()
     pygame.display.flip()
 
-    if computer_sym == "X":
-        pygame.time.delay(500)
-        move = find_best_move(board, computer_sym)
-        if move:
-            board.apply_move(move, computer_sym)
+    # Computer first move if computer is X
+    if computer_sym == "X" and board.move_count == 0:
+        first_move = random.choice(board.get_available_moves())
+        board.apply_move(first_move, computer_sym)
+        pygame.display.set_caption("Your Turn")
+        pygame.display.flip()
+    else:
+        pygame.display.set_caption("Your Turn")
 
-    while True:
+    running = True
+    while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
 
-            is_human_turn = ((board.move_count % 2 == 0 and human_sym == "X") or
-                             (board.move_count % 2 == 1 and human_sym == "O"))
-
-            if is_human_turn and event.type == pygame.MOUSEBUTTONDOWN:
+            elif event.type == pygame.MOUSEBUTTONDOWN and board.move_count < 9:
                 mouseX, mouseY = pygame.mouse.get_pos()
                 row = mouseY // board.CELL_SIZE
                 col = mouseX // board.CELL_SIZE
@@ -118,6 +120,7 @@ def CvsH():
                 else:
                     print("Invalid move. Try again!")
 
+
 def HvsH():
     board = Board(draw_enabled=True)
     board.board_ui()
@@ -141,6 +144,10 @@ def HvsH():
             print("Invalid move. Try again!")
 
 if __name__ == "__main__":
-    pygame.init()
-    CvsH()   # Human vs Computer
-    # HvsH()  # Uncomment to test Human vs Human
+    board = Board()
+    board.Home_ui()
+    choice = board.handle_home_events()
+    if choice == "CvsH":
+        CvsH()
+    elif choice == "HvsH":
+        HvsH()
