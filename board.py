@@ -117,6 +117,43 @@ class Board():
         pygame.display.flip()
 
 
+    def gameOver_ui(self, winner, human_sym = None):
+        screen.fill((255, 100, 100))  # Red background
+        if human_sym is None:
+            # Message and emoji based on winner
+            if winner == 1:  # Player A (X) wins
+                message = "X Wins! "
+            elif winner == -1:  # Player B (O) wins
+                message = "O Wins! "
+            else:  # Draw
+                message = "Draw! "
+
+        else:
+            if winner == 0:
+                message = "It's a Draw!"
+            
+            elif (winner == 1 and human_sym == "X") or (winner == -1 and human_sym == "O"):
+                message = "Human Wins!"
+            else:
+                message = "Computer Wins!"
+
+        # Render message
+        msg_surface = self.font.render(message, True, (255, 255, 255))
+        msg_rect = msg_surface.get_rect(center=(WIDTH // 2, HEIGHT // 3))
+        screen.blit(msg_surface, msg_rect)
+
+        # Restart button rectangle
+        self.restart_button = pygame.Rect(WIDTH//2 - 100, HEIGHT//2, 200, 50)
+        pygame.draw.rect(screen, (0, 128, 255), self.restart_button)
+
+        # Restart button text
+        restart_text = self.button_font.render("Restart Game", True, (255, 255, 255))
+        restart_rect = restart_text.get_rect(center=self.restart_button.center)
+        screen.blit(restart_text, restart_rect)
+
+        pygame.display.flip()
+
+
 
     def handle_home_events(self):
         while True:
