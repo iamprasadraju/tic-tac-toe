@@ -27,10 +27,10 @@
 
 - Upgarde to Alpha - beta pruning Algorithm
 
-- ~~ MiniMax Algorithm implementation ~~
+- ~~MiniMax Algorithm implementation~~
 
-- ~~ Cross line, if a player win ! ~~
+- ~~Cross line, if a player wins!~~
 
-- ~~ Start page of Game ~~
+- ~~Start page of Game~~
 
-- ~~ Game Over Page Ui ~~
+- ~~Game Over Page UI~~
