@@ -1,4 +1,12 @@
-# TIC TAC TOE
+<center><h1>Tic-Tac-Toe</h1></center>
+
+Implementation of tic-tac-toe using pygame
+
+**Features**
+
+1. Two Players
+
+2. Computer vs Human -> Normal Minimax
 
 <p align="center">
   <div align="center" style="display: inline-block; margin: 10px;">
@@ -18,6 +26,20 @@
   </div>
 </p>
 
+
+Usage
+-----
+
+1. Install required Packages
+
+    ```
+    pip install requirements.txt
+    ```
+
+2. Run tic-tac-toe
+    ```
+    ./game.py
+    ```
 
 **TODOS:**
 
