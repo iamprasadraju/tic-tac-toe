@@ -1,20 +1,28 @@
+import math
+
 import pygame
 
 pygame.init()
 
 WIDTH = 500
 ROWS = 3
+CELL_SIZE = WIDTH // ROWS
+
 
 # Window size
 screen = pygame.display.set_mode((WIDTH, WIDTH))
 pygame.display.set_caption("Tic Tac Toe")
-
-GRAY = (128, 128, 128)
-
 running = True
 
-X_IMAGE = pygame.transform.scale(pygame.image.load("assets/x.png"), (80, 80))
-O_IMAGE = pygame.transform.scale(pygame.image.load("assets/o.png"), (80, 80))
+
+GRAY = (128, 128, 128)
+WHITE = (255, 255, 255)
+
+screen.fill(WHITE)
+
+
+X_IMAGE = pygame.transform.scale(pygame.image.load("assets/x.png"), (100, 100))
+O_IMAGE = pygame.transform.scale(pygame.image.load("assets/o.png"), (100, 100))
 
 
 class Board:
@@ -22,19 +30,25 @@ class Board:
         self.running = True
 
     # Apply the move on Screen
-    def apply_move(self, symbol):
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            m_x, m_y = event.pos  # Get mouse click co-ordinates
+    def apply_move(self, event, symbol):
+        m_x, m_y = event.pos  # Get mouse click co-ordinates
 
-            if symbol == "O":
-                screen.blit(O_IMAGE, (m_x, m_y))
-            elif symbol == "X":
-                screen.blit(X_IMAGE, (m_x, m_y))
+        row = m_y // CELL_SIZE
+        col = m_x // CELL_SIZE
+
+        # center the image in the cell
+        pos_x = col * CELL_SIZE + (CELL_SIZE - 100) // 2
+        pos_y = row * CELL_SIZE + (CELL_SIZE - 100) // 2
+
+        if symbol == "O":
+            screen.blit(O_IMAGE, (pos_x, pos_y))
+        elif symbol == "X":
+            screen.blit(X_IMAGE, (pos_x, pos_y))
 
     def render_board(self):
         pass
 
-    def grid(self):
+    def draw_grid(self):
         gap = WIDTH // ROWS
 
         # Starting points
@@ -50,6 +64,8 @@ class Board:
         pygame.display.flip()
 
 
+"""
+
 if __name__ == "__main__":
     Game = Board()
     while running:
@@ -58,7 +74,11 @@ if __name__ == "__main__":
                 running = False
 
         Game.grid()
-        Game.move("X")
+        Game.apply_move()
 
         pygame.display.flip()
     pygame.quit()
+
+
+
+"""
