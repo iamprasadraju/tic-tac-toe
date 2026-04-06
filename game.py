@@ -1,45 +1,43 @@
 import random
 
 import pygame
+
 from board import Board
 
-all_pos = [(row, col) for row in range(3) for col in range(3)]
-WIN_POSITIONS = [
-    # rows
-    [(0, 0), (0, 1), (0, 2)],
-    [(1, 0), (1, 1), (1, 2)],
-    [(2, 0), (2, 1), (2, 2)],
-    # columns
-    [(0, 0), (1, 0), (2, 0)],
-    [(0, 1), (1, 1), (2, 1)],
-    [(0, 2), (1, 2), (2, 2)],
-    # diagonals
-    [(0, 0), (1, 1), (2, 2)],
-    [(0, 2), (1, 1), (2, 0)],
-]
+# Initialize the pygame display
+pygame.init()
 
 
-running = True
+# pygame window size (in pixels)
+width = 600
+height = 600
+
+# pygame.display.init()
+screen = pygame.display.set_mode(size=(width, height))
+pygame.display.set_caption("Tic Tac Toe")
+clock = pygame.time.Clock()  # Limits FPS
+
+ttt_board = Board(screen)  # window size default (500px * 500px)
 
 
-init_board = [[None, None, None], [None, None, None], [None, None, None]]
+def run():
+    running = True
+    while running:
+        events = pygame.event.get()
+        for event in events:
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:  # Left mouse button
+                    row, col = ttt_board.get_mouse_gridnum(event.pos)
 
-
-def HvsH(event):
-    symbol = random.choice(["X", "O"])
-
-    game.apply_move(event, symbol)
+                    player = random.choice(["X", "O"])
+                    ttt_board.player_move(player, (row, col))
+        ttt_board.draw_grid()  # Draw the White grid
+        # Update the display
+        pygame.display.flip()
+    pygame.quit()
 
 
 if __name__ == "__main__":
-    game = Board()
-
-    while game.running:
-        game.draw_grid()
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                game.running = False
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                HvsH(event)
-        pygame.display.flip()
-    pygame.quit()
+    run()

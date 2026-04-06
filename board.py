@@ -39,11 +39,11 @@ class Board:
             x_pos = j * self.CELLSIZE_W
             pygame.draw.line(self.screen, self.WHITE, (x_pos, 0), (x_pos, self.height))
 
-    def player_move(self, player: int, grid_num: Tuple[int, int]):
+    def player_move(self, player: str, grid_num: Tuple[int, int]):
         row, col = grid_num
 
         # X player move
-        if player == 0:
+        if player == "X":
             pad = 40
 
             x = col * self.CELLSIZE_W
@@ -62,7 +62,7 @@ class Board:
             )
 
         # O player move
-        elif player == 1:
+        elif player == "O":
             center = (
                 col * self.CELLSIZE_W + (self.CELLSIZE_W // 2),
                 row * self.CELLSIZE_H + (self.CELLSIZE_H // 2),
