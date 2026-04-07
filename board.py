@@ -2,6 +2,8 @@ from typing import Tuple
 
 import pygame
 
+from effects import ConfettiEffect
+
 
 # board ui and actions
 class Board:
@@ -25,6 +27,8 @@ class Board:
         self.BLACK = (0, 0, 0)
         self.GREY = (128, 128, 128)
         self.GREYRED = (153, 3, 3)
+
+        self.confetti = ConfettiEffect(self.screen)
 
     def draw_grid(self):
         # draw horizontal lines
@@ -83,3 +87,10 @@ class Board:
         print(row_num, col_num)
 
         return (row_num, col_num)
+
+    # TODO:custom event handling for tie, win, start, home screens
+    def event_screen(self, event=None):
+        if event == 1:
+            self.screen.fill((30, 30, 30))  # dark background
+            self.confetti.update()
+            self.confetti.draw()

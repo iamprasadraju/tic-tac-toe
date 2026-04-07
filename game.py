@@ -35,7 +35,12 @@ def run():
                     ttt_board.player_move(player, (row, col))
         ttt_board.draw_grid()  # Draw the White grid
         # Update the display
+
+        ttt_board.event_screen(event=1)
+
         pygame.display.flip()
+
+        clock.tick(60)
     pygame.quit()
 
 
