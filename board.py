@@ -12,7 +12,7 @@ class Button:
         self.color = color
         self.hover_color = hover_color
         # Loading font once in init is better for performance
-        self.font = pygame.font.SysFont("Arial", 22)
+        self.font = pygame.font.Font("assets/PixeloidSans.ttf", 18)
 
     def draw(self, screen):
         mouse_pos = pygame.mouse.get_pos()
