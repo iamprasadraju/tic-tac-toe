@@ -21,33 +21,36 @@ ttt_board = Board(screen)  # window size default (500px * 500px)
 
 
 def run():
+    ttt_board.board_state = "start"
     running = True
     while running:
-        screen.fill((0, 0, 0))
-        ttt_board.event_screen("home")
-
-        events = pygame.event.get()
-        for event in events:
+        for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
 
-            """
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:  # Left mouse button
-                    row, col = ttt_board.get_mouse_gridnum(event.pos)
+            elif ttt_board.board_state == "start":
+                if ttt_board.hvsh_btn.is_clicked(event):
+                    ttt_board.board_state = "playing"
+                elif ttt_board.hvsai_btn.is_clicked(event):
+                    ttt_board.board_state = "playing"
 
+            elif ttt_board.board_state == "playing":
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    row, col = ttt_board.get_mouse_gridnum(event.pos)
                     player = random.choice(["X", "O"])
                     ttt_board.player_move(player, (row, col))
-            """
 
-        # ttt_board.draw_grid()  # Draw the White grid
-        ttt_board.event_screen(event="home")
+        if ttt_board.board_state == "start":
+            ttt_board.screen.fill(ttt_board.BLACK)
+            ttt_board.event_screen("home")
 
-        pygame.display.update()
+        elif ttt_board.board_state == "playing":
+            if not ttt_board.grid_drawn:
+                ttt_board.screen.fill(ttt_board.BLACK)
+                ttt_board.draw_grid()
+                ttt_board.grid_drawn = True
 
-        # Update the display
         pygame.display.flip()
-
         clock.tick(60)
     pygame.quit()
 

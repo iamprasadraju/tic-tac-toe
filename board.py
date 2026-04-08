@@ -63,7 +63,9 @@ class Board:
         self.GREYRED = (153, 3, 3)
 
         # Board state (playing, tie, win)
-        self.board_state = "playing"
+        self.board_state = "start"
+        self.grid_drawn = False
+        self.moves = []  # save the moves
 
         self.confetti = ConfettiEffect(self.screen)
 
@@ -135,7 +137,7 @@ class Board:
     # TODO:custom event handling for tie, win, start, home screens
     def event_screen(self, event=None):
         if event == 1:
-            self.screen.fill(SELF.BLACK)  # dark background
+            self.screen.fill(self.BLACK)  # dark background
             self.confetti.update()
             self.confetti.draw()
 
