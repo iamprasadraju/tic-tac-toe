@@ -23,21 +23,29 @@ ttt_board = Board(screen)  # window size default (500px * 500px)
 def run():
     running = True
     while running:
+        screen.fill((0, 0, 0))
+        ttt_board.event_screen("home")
+
         events = pygame.event.get()
         for event in events:
             if event.type == pygame.QUIT:
                 running = False
+
+            """
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:  # Left mouse button
                     row, col = ttt_board.get_mouse_gridnum(event.pos)
 
                     player = random.choice(["X", "O"])
                     ttt_board.player_move(player, (row, col))
-        ttt_board.draw_grid()  # Draw the White grid
+            """
+
+        # ttt_board.draw_grid()  # Draw the White grid
+        ttt_board.event_screen(event="home")
+
+        pygame.display.update()
+
         # Update the display
-
-        ttt_board.event_screen(event=1)
-
         pygame.display.flip()
 
         clock.tick(60)

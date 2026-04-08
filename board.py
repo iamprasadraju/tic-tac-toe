@@ -5,6 +5,40 @@ import pygame
 from effects import ConfettiEffect
 
 
+class Button:
+    def __init__(self, text, x, y, width, height, color, hover_color):
+        self.rect = pygame.Rect(x, y, width, height)
+        self.text = text
+        self.color = color
+        self.hover_color = hover_color
+        # Loading font once in init is better for performance
+        self.font = pygame.font.SysFont("Arial", 22)
+
+    def draw(self, screen):
+        mouse_pos = pygame.mouse.get_pos()
+        is_hovering = self.rect.collidepoint(mouse_pos)
+
+        if is_hovering:
+            # FILLED rectangle on hover
+            pygame.draw.rect(screen, self.hover_color, self.rect, border_radius=15)
+            text_color = (255, 255, 255)  # White text when filled
+        else:
+            # BORDER only when not hovering (width=3)
+            pygame.draw.rect(screen, self.color, self.rect, width=3, border_radius=15)
+            text_color = self.color  # Text matches border color
+
+        # Render text and center it
+        text_surf = self.font.render(self.text, True, text_color)
+        text_rect = text_surf.get_rect(center=self.rect.center)
+        screen.blit(text_surf, text_rect)
+
+    def is_clicked(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            if self.rect.collidepoint(event.pos):
+                return True
+        return False
+
+
 # board ui and actions
 class Board:
     def __init__(
@@ -28,7 +62,17 @@ class Board:
         self.GREY = (128, 128, 128)
         self.GREYRED = (153, 3, 3)
 
+        # Board state (playing, tie, win)
+        self.board_state = "playing"
+
         self.confetti = ConfettiEffect(self.screen)
+
+        self.hvsh_btn = Button(
+            "Human vs Human", 200, 200, 200, 70, "green", "green"
+        )  # x, y, width, height
+        self.hvsai_btn = Button("Human vs AI", 200, 350, 200, 70, "green", "green")
+
+        self.home_font = pygame.font.Font("assets/PixeloidSans-Bold.ttf", 35)
 
     def draw_grid(self):
         # draw horizontal lines
@@ -91,6 +135,13 @@ class Board:
     # TODO:custom event handling for tie, win, start, home screens
     def event_screen(self, event=None):
         if event == 1:
-            self.screen.fill((30, 30, 30))  # dark background
+            self.screen.fill(SELF.BLACK)  # dark background
             self.confetti.update()
             self.confetti.draw()
+
+        elif event == "home":
+            text_surf = self.home_font.render("Tic Tac Toe", True, self.WHITE)
+            self.screen.blit(text_surf, (172, 60))
+
+            self.hvsh_btn.draw(self.screen)
+            self.hvsai_btn.draw(self.screen)
