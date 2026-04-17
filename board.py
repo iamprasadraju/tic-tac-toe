@@ -1,3 +1,4 @@
+import random
 from typing import Tuple
 
 import pygame
@@ -65,8 +66,25 @@ class Board:
         # Board state (playing, tie, win)
         self.board_state = "start"
         self.grid_drawn = False
-        self.moves = []  # save the moves
 
+        self.moves = []  # save the moves
+        self.X_moves = []
+        self.O_moves = []
+
+        horizontal_win_moves = [
+            [(j, i) for i in range(self.rows)] for j in range(self.cols)
+        ]
+        vertical_win_moves = [
+            [(i, j) for i in range(self.rows)] for j in range(self.cols)
+        ]
+        diagonal_win_moves = [
+            [(i, i) for i in range(self.rows)],  # top-left → bottom-right
+            [(i, 2 - i) for i in range(self.cols)],  # top-right → bottom-left
+        ]
+
+        self.all_win_moves = (
+            horizontal_win_moves + vertical_win_moves + diagonal_win_moves
+        )
         self.confetti = ConfettiEffect(self.screen)
 
         self.hvsh_btn = Button(
@@ -74,7 +92,10 @@ class Board:
         )  # x, y, width, height
         self.hvsai_btn = Button("Human vs AI", 200, 350, 200, 70, "green", "green")
 
+        self.play_again = Button("Play Again!", 200, 350, 200, 70, "green", "green")
+
         self.home_font = pygame.font.Font("assets/PixeloidSans-Bold.ttf", 35)
+        self.current_player = random.choice(["X", "O"])
 
     def draw_grid(self):
         # draw horizontal lines
@@ -89,11 +110,13 @@ class Board:
             x_pos = j * self.CELLSIZE_W
             pygame.draw.line(self.screen, self.WHITE, (x_pos, 0), (x_pos, self.height))
 
-    def player_move(self, player: str, grid_num: Tuple[int, int]):
+    def player_move(self, grid_num: Tuple[int, int]):
         row, col = grid_num
+        self.moves.append((row, col))
 
         # X player move
-        if player == "X":
+        if self.current_player == "X":
+            self.X_moves.append(grid_num)
             pad = 40
 
             x = col * self.CELLSIZE_W
@@ -112,7 +135,8 @@ class Board:
             )
 
         # O player move
-        elif player == "O":
+        elif self.current_player == "O":
+            self.O_moves.append(grid_num)
             center = (
                 col * self.CELLSIZE_W + (self.CELLSIZE_W // 2),
                 row * self.CELLSIZE_H + (self.CELLSIZE_H // 2),
@@ -134,16 +158,36 @@ class Board:
 
         return (row_num, col_num)
 
-    # TODO:custom event handling for tie, win, start, home screens
-    def event_screen(self, event=None):
-        if event == 1:
-            self.screen.fill(self.BLACK)  # dark background
-            self.confetti.update()
-            self.confetti.draw()
-
-        elif event == "home":
+    # TODO:custom event handling for tie, win, start, home screens: event = 1, event = 0
+    def event_screen(self, screen: str, symbol: str | None = None):
+        if screen == "home":
             text_surf = self.home_font.render("Tic Tac Toe", True, self.WHITE)
             self.screen.blit(text_surf, (172, 60))
 
             self.hvsh_btn.draw(self.screen)
             self.hvsai_btn.draw(self.screen)
+
+    def trigger_win(self, symbol):
+        self.win_symbol = symbol
+        self.board_state = "game_over"
+
+    def draw_win_screen(self):
+        self.screen.fill(self.BLACK)
+
+        text = self.home_font.render(f"{self.current_player} Wins!", True, self.WHITE)
+        self.play_again.draw(self.screen)
+        self.screen.blit(text, (220, 60))
+
+        self.confetti.update()
+        self.confetti.draw()
+
+    def reset_game(self):
+        self.moves.clear()
+        self.X_moves.clear()
+        self.O_moves.clear()
+
+        self.current_player = random.choice(["X", "O"])
+        self.board_state = "start"
+        pygame.display.set_caption("Tic Tac Toe")
+
+        self.grid_drawn = False
