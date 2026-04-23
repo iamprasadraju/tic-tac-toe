@@ -68,6 +68,7 @@ class Board:
         self.grid_drawn = False
 
         self.moves = []  # save the moves
+        self.max_moves = self.rows * self.cols
         self.X_moves = []
         self.O_moves = []
 
@@ -96,6 +97,8 @@ class Board:
 
         self.home_font = pygame.font.Font("assets/PixeloidSans-Bold.ttf", 35)
         self.current_player = random.choice(["X", "O"])
+        n_player = random.choice(["ai", "human"])  # for human vs ai Play
+        self.win_symbol = ""
 
     def draw_grid(self):
         # draw horizontal lines
@@ -167,19 +170,20 @@ class Board:
             self.hvsh_btn.draw(self.screen)
             self.hvsai_btn.draw(self.screen)
 
-    def trigger_win(self, symbol):
-        self.win_symbol = symbol
-        self.board_state = "game_over"
-
     def draw_win_screen(self):
         self.screen.fill(self.BLACK)
 
-        text = self.home_font.render(f"{self.current_player} Wins!", True, self.WHITE)
-        self.play_again.draw(self.screen)
-        self.screen.blit(text, (220, 60))
+        if self.board_state == "win":
+            text = self.home_font.render(f"{self.win_symbol} Wins!", True, self.WHITE)
+            self.screen.blit(text, (220, 60))
+            self.confetti.update()
+            self.confetti.draw()
 
-        self.confetti.update()
-        self.confetti.draw()
+        elif self.board_state == "game_over":
+            text = self.home_font.render("It's a Draw", True, self.WHITE)
+            self.screen.blit(text, (190, 60))
+
+        self.play_again.draw(self.screen)
 
     def reset_game(self):
         self.moves.clear()
@@ -187,7 +191,53 @@ class Board:
         self.O_moves.clear()
 
         self.current_player = random.choice(["X", "O"])
+        n_player = random.choice(["ai", "human"])
         self.board_state = "start"
         pygame.display.set_caption("Tic Tac Toe")
 
         self.grid_drawn = False
+
+    def HvsH(self, move):
+        if move in self.moves:
+            pygame.display.set_caption("Invalid move")
+            return
+
+        if len(self.moves) >= self.max_moves:
+            return
+
+        self.player_move(move)
+
+        if self.current_player == "X":
+            if self.check_winner(self.X_moves):
+                pygame.display.set_caption("X Wins!")
+                self.board_state = "win"
+                self.win_symbol = "X"
+
+                return
+            self.current_player = "O"
+        else:
+            if self.check_winner(self.O_moves):
+                pygame.display.set_caption("O Wins!")
+                self.board_state = "win"
+                self.win_symbol = "O"
+
+                return
+            self.current_player = "X"
+
+        # Check draw
+        if len(self.moves) == self.max_moves:
+            pygame.display.set_caption("It's a Tie!")
+            self.board_state = "game_over"
+            return
+
+        pygame.display.set_caption(f"{self.current_player} Turn")
+        pygame.display.flip()
+
+    def HvsAI(self):
+        pass
+
+    def check_winner(self, player_moves):
+        for comb in self.all_win_moves:
+            if all(pos in player_moves for pos in comb):
+                return True
+        return False

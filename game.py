@@ -23,13 +23,6 @@ clock = pygame.time.Clock()  # Limits FPS
 ttt_board = Board(screen)  # window size default (500px * 500px)
 
 
-def check_winner(player_moves):
-    for comb in ttt_board.all_win_moves:
-        if all(pos in player_moves for pos in comb):
-            return True
-    return False
-
-
 def run():
     ttt_board.board_state = "start"
     running = True
@@ -39,14 +32,19 @@ def run():
                 running = False
 
             elif ttt_board.board_state == "start":
+                # Button for Human vs Human
                 if ttt_board.hvsh_btn.is_clicked(event):
                     ttt_board.board_state = "playing"
                     pygame.display.set_caption(f"{ttt_board.current_player} Turn")
 
+                # Button for Human vs AI
                 elif ttt_board.hvsai_btn.is_clicked(event):
                     ttt_board.board_state = "playing"
-                    pygame.display.set_caption(f"{ttt_board.current_player} Turn")
-            elif ttt_board.board_state == "game_over":
+                    pygame.display.set_caption(
+                        f"{ttt_board.current_player} ({n_player}) Turn"
+                    )
+
+            elif ttt_board.board_state == "game_over" or ttt_board.board_state == "win":
                 if ttt_board.play_again.is_clicked(event):
                     ttt_board.reset_game()
 
@@ -54,38 +52,14 @@ def run():
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     row, col = ttt_board.get_mouse_gridnum(event.pos)
                     move = (row, col)
-                    max_moves = num_cells[0] * num_cells[1]
 
-                    # make move for current player
-                    if len(ttt_board.moves) < max_moves:
-                        if move not in ttt_board.moves:
-                            ttt_board.player_move((row, col))
-
-                            if ttt_board.current_player == "X":
-                                if check_winner(ttt_board.X_moves):
-                                    pygame.display.set_caption("X Wins!")
-                                    ttt_board.board_state = "game_over"
-                                    continue
-                                ttt_board.current_player = "O"
-                            else:
-                                if check_winner(ttt_board.O_moves):
-                                    pygame.display.set_caption("O Wins!")
-                                    ttt_board.board_state = "game_over"
-                                    continue
-                                ttt_board.current_player = "X"
-                                pygame.display.flip()
-
-                            pygame.display.set_caption(
-                                f"{ttt_board.current_player} Turn"
-                            )
-                        else:
-                            pygame.display.set_caption("Invalid move")
+                    ttt_board.HvsH(move)
 
         if ttt_board.board_state == "start":
             ttt_board.screen.fill(ttt_board.BLACK)
             ttt_board.event_screen("home")
 
-        elif ttt_board.board_state == "game_over":
+        elif ttt_board.board_state == "win" or ttt_board.board_state == "game_over":
             ttt_board.draw_win_screen()
 
         elif ttt_board.board_state == "playing":
