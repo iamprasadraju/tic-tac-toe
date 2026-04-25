@@ -35,11 +35,14 @@ def run():
                 # Button for Human vs Human
                 if ttt_board.hvsh_btn.is_clicked(event):
                     ttt_board.board_state = "playing"
+                    ttt_board.board_mode = "HvsH"
                     pygame.display.set_caption(f"{ttt_board.current_player} Turn")
 
                 # Button for Human vs AI
                 elif ttt_board.hvsai_btn.is_clicked(event):
                     ttt_board.board_state = "playing"
+                    ttt_board.board_mode = "HvsAI"
+
                     pygame.display.set_caption(
                         f"{ttt_board.current_player} ({n_player}) Turn"
                     )
@@ -52,8 +55,10 @@ def run():
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     row, col = ttt_board.get_mouse_gridnum(event.pos)
                     move = (row, col)
-
-                    ttt_board.HvsH(move)
+                    if ttt_board.board_mode == "HvsH":
+                        ttt_board.HvsH(move)
+                    elif ttt_board.board_mode == "HvsAI":
+                        ttt_board.HvsAI()
 
         if ttt_board.board_state == "start":
             ttt_board.screen.fill(ttt_board.BLACK)

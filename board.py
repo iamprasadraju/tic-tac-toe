@@ -99,6 +99,7 @@ class Board:
         self.current_player = random.choice(["X", "O"])
         n_player = random.choice(["ai", "human"])  # for human vs ai Play
         self.win_symbol = ""
+        self.board_mode = ""
 
     def draw_grid(self):
         # draw horizontal lines
@@ -234,7 +235,30 @@ class Board:
         pygame.display.flip()
 
     def HvsAI(self):
-        pass
+        if move in self.moves:
+            pygame.display.set_caption("Invalid move")
+            return
+
+        if len(self.moves) >= self.max_moves:
+            return
+
+        # TODO: caption with player(Human or AI)
+        if self.current_player == "X":
+            if self.check_winner(self.X_moves):
+                pygame.display.set_caption("X Wins!")
+                self.board_state = "win"
+                self.win_symbol = "X"
+
+                return
+            self.current_player = "O"
+        else:
+            if self.check_winner(self.O_moves):
+                pygame.display.set_caption("O Wins!")
+                self.board_state = "win"
+                self.win_symbol = "O"
+
+                return
+            self.current_player = "X"
 
     def check_winner(self, player_moves):
         for comb in self.all_win_moves:
